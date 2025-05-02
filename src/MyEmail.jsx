@@ -6,7 +6,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
     <Html>
       <Head />
       <Preview>Your updated class balance from TalkTalk.Space</Preview>
-      <Body style={{ backgroundColor: '#ffffff', padding: '20px' }}>
+      <Body style={{ backgroundColor: '#d1d1d1', padding: '20px' }}>
         <Container style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '8px' }}>
           <Img 
             src="https://i.imgur.com/xyMsddb.jpeg"
