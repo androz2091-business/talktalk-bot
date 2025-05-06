@@ -25,7 +25,7 @@ async function main() {
   }
 
   for (const student of classInfoList) {
-    const { email, remaining, expiration } = student;
+    const { email, remaining, expiration, count } = student;
     const current = student.currentPack;
     //const completed = isNaN(current - remaining) ? 'N/A' : (currentPack - remaining).toString();
 
@@ -33,7 +33,7 @@ async function main() {
       createElement(MyEmail, {
         userName: email.split('@')[0], // 이름 없으면 이메일 앞부분
         remainingClasses: remaining,
-        completedClasses: classInfoList.count,
+        completedClasses: count,
         expirationDate: expiration,
       })
     );
