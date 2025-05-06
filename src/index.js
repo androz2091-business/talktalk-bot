@@ -10,10 +10,8 @@ import readSheet from './readGoogleSheet.js';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function main() {
-  const studentList = await readSheet();
-
-  console.log('📋 Loaded students from Google Sheet:');
-  console.log(studentList);
+  const studentList = (await readSheet()).slice(0, 2);
+  // const studentList = await readSheet();
 
   const classInfoList = await getAllRemainingClasses(studentList);
 
@@ -25,13 +23,12 @@ async function main() {
   }
 
   for (const student of classInfoList) {
-    const { email, remaining, expiration, count } = student;
-    const current = student.currentPack;
-    //const completed = isNaN(current - remaining) ? 'N/A' : (currentPack - remaining).toString();
+    const { email, remaining, expiration, count, name } = student;
+    const firstName = name?.split(' ')[0]
 
     const emailHtml = await render(
       createElement(MyEmail, {
-        userName: email.split('@')[0], // 이름 없으면 이메일 앞부분
+        userName: firstName,
         remainingClasses: remaining,
         completedClasses: count,
         expirationDate: expiration,
@@ -42,14 +39,12 @@ async function main() {
     console.log(emailHtml);
 
     // 나중에 실제 전송할 땐 아래 사용
-    /*
     await resend.emails.send({
       from: 'reminder@talktalk.space',
-      to: andsunlit@gmail.com,
-      subject: `Hi ${userName}, here's your weekly class update`,
+      to: 'andsunlit@gmail.com', // email
+      subject: `Hi, here's your weekly class update`,
       html: emailHtml,
     });
-    */
   }
 }
 
