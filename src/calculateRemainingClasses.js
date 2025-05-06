@@ -62,7 +62,8 @@ async function getAllRemainingClasses(studentList) {
       email,
       remaining: currentPack - count,
       expiration: expiration.toISOString().split('T')[0],
-      count
+      count,
+      name: student.name,
     });
   }
 
