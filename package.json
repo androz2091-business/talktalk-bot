@@ -19,7 +19,9 @@
   "dependencies": {
     "@react-email/components": "^0.0.36",
     "@react-email/render": "^1.0.6",
+    "axios": "^1.9.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
     "googleapis": "^148.0.0",
     "resend": "^4.4.1"
   },

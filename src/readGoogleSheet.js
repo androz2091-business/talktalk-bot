@@ -17,7 +17,7 @@ async function readSheet() {
   const sheets = google.sheets({ version: 'v4', auth: client });
 
   const spreadsheetId = '19xh1to9QBLTzaDWYQ6AYgiUfmWV-t5KlFxl1QsY7SnY';
-  const range = 'Hoja 1!A1:D33'; // A: Name, B: Email, C: Current pack, D: Expiration Date
+  const range = 'Hoja 1!A3:D'; // ['Name', 'e-mail', 'Number of classes', 'Date']
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -25,6 +25,10 @@ async function readSheet() {
   });
 
   const rows = res.data.values;
+
+  console.log('📄 Raw rows from Google Sheets:');
+  console.log(rows);
+
   if (!rows || rows.length === 0) {
     console.log('No data found.');
     return;
@@ -41,24 +45,27 @@ async function readSheet() {
     headers.forEach((header, idx) => {
       rowData[header] = row[idx];
     });
-
-    const expDateStr = rowData['Expiration Date'];
-    const packStr = rowData['Current pack'];
-
-    // Skip if expiration date or pack missing
-    if (!expDateStr || !packStr) continue;
-
-    const expDate = dayjs(expDateStr, 'D/M/YY');
+  
+    const name = rowData['Name']?.trim();
+    const email = rowData['E-mail']?.trim();
+    const packStr = rowData['Number of classes']?.trim();
+    const expDateStr = rowData['Date']?.trim();
+  
+    const pack = parseInt(packStr);
+    const expDate = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY', 'YYYY-MM-DD'], true);
+  
+    if (!email || Number.isNaN(pack) || !expDateStr) continue;
     if (!expDate.isValid() || expDate.isBefore(today)) continue;
+  
+    validClients.push({
+      name,
+      email,
+      currentPack: pack,
+      expirationDate: expDate.format('YYYY-MM-DD'),
+    });
+  }  
 
-    rowData['Current pack'] = parseInt(packStr);
-    rowData['Expiration Date'] = expDate.format('YYYY-MM-DD');
-
-    validClients.push(rowData);
-  }
-
-  console.log('✅ Valid Clients (not expired):');
-  console.log(validClients);
+  return validClients;
 }
 
-readSheet().catch(console.error);
+module.exports = readSheet;

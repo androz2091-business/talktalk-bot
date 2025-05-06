@@ -3,7 +3,7 @@ import { Html, Head, Preview, Body, Container, Text, Heading, Button, Img, Secti
 
 export default function MyEmail({ userName, completedClasses, remainingClasses, expirationDate }) {
   return (
-    <Html lang="en">
+    <Html>
       <Head />
       <Preview>Your updated class balance from TalkTalk.Space</Preview>
       <Body style={{ backgroundColor: '#d1d1d1', padding: '20px' }}>
@@ -22,14 +22,14 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
           />
 
           <Text style={{ fontSize: '16px', color: '#333', fontWeight: '500', marginBottom: '20px' }}>
-            Hello{userName ? ` ${userName}` : ''}, it's TalkTalk 👋
+            Hello, it's TalkTalk 👋
           </Text>
 
           <Section style={{ marginBottom: '20px' }}>
             <Row>
               <Column style={{ textAlign: 'center' }}>
                 <Text style={{ fontSize: '20px' }}>🔥</Text>
-                <Text style={{ fontSize: '16px', fontWeight: 'bold', color: '#1c1b3b'}}>{completedClasses != null ? completedClasses : '--'}</Text>
+                <Text style={{ fontSize: '16px', fontWeight: 'bold', color: '#1c1b3b'}}>{completedClasses}</Text>
                 <Text style={{ fontSize: '14px', color: '#555' }}>Classes Completed</Text>
               </Column>
               <Column style={{ textAlign: 'center' }}>
@@ -88,7 +88,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
           </Text>
           <div style={{ textAlign: 'center' }}>
             <a href="https://talktalk.space/" style={{ display: 'inline-block', margin: '0 5px' }}>
-              <Img src="https://i.imgur.com/A0VfMwh.png" alt="Visit TalkTalk Website" width="24" />
+              <Img src="https://i.imgur.com/A0VfMwh.png" alt="Website" width="24" />
             </a>
             <a href="https://discord.gg/nPktyQUQ3v" style={{ display: 'inline-block', margin: '0 5px' }}>
               <Img src="https://i.imgur.com/eOpcLAe.png" alt="Discord" width="24" />
