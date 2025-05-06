@@ -47,19 +47,31 @@ async function readSheet() {
     const email = rowData['E-mail']?.trim();
     const packStr = rowData['Number of classes']?.trim();
     const expDateStr = rowData['Date']?.trim();
+
+    if (!email || !packStr || !expDateStr) continue;
   
     const pack = parseInt(packStr);
-    const expDate = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY', 'YYYY-MM-DD'], true);
+    const expDate = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY'], true);
   
     if (!email || Number.isNaN(pack) || !expDateStr) continue;
     if (!expDate.isValid() || expDate.isBefore(today)) continue;
+
+    const names = name.split(' & ');
+    const emails = email.split(' & ');
+    
+    if (names.length !== emails.length) continue;
+
+    const groupId = emails.sort().join('&');
   
-    validClients.push({
-      name,
-      email,
-      currentPack: pack,
-      expirationDate: expDate.format('YYYY-MM-DD'),
-    });
+    for (let i = 0; i < emails.length; i++) {
+      validClients.push({
+        name: names[i].trim(),
+        email: emails[i].trim(),
+        currentPack: pack,
+        expirationDate: expDate.format('YYYY-MM-DD'),
+        groupId,
+      });
+    }
   }  
 
   return validClients;

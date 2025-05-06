@@ -33,8 +33,11 @@ async function main() {
     );
 
     console.log(`--- Email to: ${email} ---`);
-    console.log(emailHtml);
+    //console.log(emailHtml);
     console.log(firstName);
+    console.log(remaining);
+    console.log(count);
+    console.log(expiration);
 
     // 나중에 실제 전송할 땐 아래 사용
     // await resend.emails.send({

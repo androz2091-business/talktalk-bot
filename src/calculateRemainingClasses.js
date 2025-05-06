@@ -9,40 +9,50 @@ async function getAllRemainingClasses(studentList) {
     Authorization: `Bearer ${TOKEN}`,
   };
 
-  const results = [];
+  const grouped = new Map();
 
   for (const student of studentList) {
-    const { email, currentPack, expirationDate } = student;
+    const { groupId } = student;
+    if (!grouped.has(groupId)) grouped.set(groupId, []);
+    grouped.get(groupId).push(student);
+  }
 
-    if (!email) {
-      console.warn(`⚠️ Skipping student with missing email:`, student);
-      continue;
-    }
+  const results = [];
+
+  for (const [groupId, groupMembers] of grouped.entries()) {
+    const emails = groupMembers.map(m => m.email);
+    const currentPack = groupMembers[0].currentPack;
+    const expirationDate = groupMembers[0].expirationDate;
 
     const expiration = new Date(expirationDate);
     const now = new Date();
-
-    if (expiration < now) {
+    if (expiration < now || isNaN(expiration.getTime())) {
+      console.warn(`⚠️ Skipping group ${emails.join('&')} due to invalid or past expiration date`);
       continue;
     }
 
-    const events = [];
-    let nextPage = `${API_BASE}/scheduled_events?organization=${encodeURIComponent(CALENDLY_ORG)}&invitee_email=${encodeURIComponent(email)}`;
+    const eventMap = new Map();
 
-    try {
-      while (nextPage) {
-        const res = await axios.get(nextPage, { headers });
-        events.push(...res.data.collection);
-        nextPage = res.data.pagination?.next_page || null;
+    for (const email of emails) {
+      let nextPage = `${API_BASE}/scheduled_events?organization=${encodeURIComponent(CALENDLY_ORG)}&invitee_email=${encodeURIComponent(email)}`;
+
+      try {
+        while (nextPage) {
+          const res = await axios.get(nextPage, { headers });
+          for (const event of res.data.collection) {
+            eventMap.set(event.uri, event); // avoid duplicate events
+          }
+          nextPage = res.data.pagination?.next_page || null;
+        }
+      } catch (err) {
+        console.error(`❌ Failed to fetch events for ${email}: ${err.response?.status} ${err.message}`);
+        continue;
       }
-    } catch (err) {
-      console.error(`❌ Failed to fetch events for ${email}: ${err.response?.status} ${err.message}`);
-      continue;
     }
 
     let count = 0;
 
-    for (const event of events) {
+    for (const event of eventMap.values()) {
       const start = new Date(event.start_time);
 
       if (event.status === 'active') {
@@ -58,13 +68,15 @@ async function getAllRemainingClasses(studentList) {
       }
     }
 
-    results.push({
-      email,
-      remaining: currentPack - count,
-      expiration: expiration.toISOString().split('T')[0],
-      count,
-      name: student.name,
-    });
+    for (const member of groupMembers) {
+      results.push({
+        email: member.email,
+        name: member.name,
+        remaining: currentPack - count,
+        expiration: expiration.toISOString().split('T')[0],
+        count,
+      });
+    }
   }
 
   return results;
