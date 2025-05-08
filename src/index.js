@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { createElement } from 'react';
 import MyEmail from './MyEmail.js';
@@ -7,7 +7,13 @@ import MyEmail from './MyEmail.js';
 import { getAllRemainingClasses } from './calculateRemainingClasses.js';
 import readSheet from './readGoogleSheet.js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
+  }
+});
 
 async function main() {
   // const studentList = (await readSheet()).slice(0, 2);
@@ -39,10 +45,10 @@ async function main() {
     console.log(count);
     console.log(expiration);
 
-    // 나중에 실제 전송할 땐 아래 사용
-    // await resend.emails.send({
-    //   from: 'reminder@talktalk.space',
-    //   to: 'andsunlit@gmail.com', // email
+    // Send email using nodemailer
+    // await transporter.sendMail({
+    //   from: process.env.GMAIL_USER,
+    //   to: 'andsunlit@gmail.com',
     //   subject: `Hi ${firstName}, here's your weekly class update`,
     //   html: emailHtml,
     // });

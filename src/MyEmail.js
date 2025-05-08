@@ -51,7 +51,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
 
           <Section style={{ textAlign: 'center' }}>
             <Button 
-              href="https://talktalk.space" 
+              href="https://linktr.ee/hey.talktalk" 
               style={{ 
                 backgroundColor: '#eb257a', 
                 color: '#fff', 
