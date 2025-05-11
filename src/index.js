@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function main() {
-  const studentList = (await readSheet()).slice(7, 10);
+  const studentList = (await readSheet()).slice(10, 11);
   //const studentList = await readSheet();
 
   const classInfoList = await getAllRemainingClasses(studentList);

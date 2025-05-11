@@ -71,14 +71,14 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
         <Container
           style={{
             borderTop: '1px solid #eee',
-            marginTop: '40px',
+            marginTop: '10px',
             paddingTop: '20px',
             color: '#999',
             fontSize: '12px',
             textAlign: 'center'
           }}
         >
-          <Text style={{ marginBottom: '2px', lineHeight: '1.2' }}>
+          <Text style={{ marginBottom: '10px', lineHeight: '1.2' }}>
             1000, Address
           </Text>
           <div style={{ textAlign: 'center' }}>
