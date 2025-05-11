@@ -51,7 +51,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
 
           <Section style={{ textAlign: 'center' }}>
             <Button 
-              href="https://talktalk.space" 
+              href="https://linktr.ee/hey.talktalk" 
               style={{ 
                 backgroundColor: '#eb257a', 
                 color: '#fff', 
@@ -80,11 +80,6 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
         >
           <Text style={{ marginBottom: '2px', lineHeight: '1.2' }}>
             1000, Address
-          </Text>
-          <Text style={{ marginBottom: '20px', marginTop: '0', lineHeight: '1.2' }}>
-            <a href="https://unsubscribe-link.com" style={{ color: '#999', textDecoration: 'underline' }}>
-              Unsubscribe
-            </a>
           </Text>
           <div style={{ textAlign: 'center' }}>
             <a href="https://talktalk.space/" style={{ display: 'inline-block', margin: '0 5px' }}>

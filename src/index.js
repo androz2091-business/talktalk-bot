@@ -16,8 +16,8 @@ const transporter = nodemailer.createTransport({
 });
 
 async function main() {
-  // const studentList = (await readSheet()).slice(0, 2);
-  const studentList = await readSheet();
+  const studentList = (await readSheet()).slice(7, 10);
+  //const studentList = await readSheet();
 
   const classInfoList = await getAllRemainingClasses(studentList);
 
@@ -40,18 +40,17 @@ async function main() {
 
     console.log(`--- Email to: ${email} ---`);
     //console.log(emailHtml);
-    console.log(firstName);
-    console.log(remaining);
-    console.log(count);
-    console.log(expiration);
+    // console.log(firstName);
+    // console.log(remaining);
+    // console.log(count);
+    // console.log(expiration);
 
-    // Send email using nodemailer
-    // await transporter.sendMail({
-    //   from: process.env.GMAIL_USER,
-    //   to: 'andsunlit@gmail.com',
-    //   subject: `Hi ${firstName}, here's your weekly class update`,
-    //   html: emailHtml,
-    // });
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: 'sam.lee@epfl.ch',
+      subject: `Hi ${firstName}, here's your weekly class update`,
+      html: emailHtml,
+    });
   }
 }
 
