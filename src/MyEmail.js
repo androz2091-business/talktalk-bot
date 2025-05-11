@@ -79,7 +79,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
           }}
         >
           <Text style={{ marginBottom: '10px', lineHeight: '1.2' }}>
-            1000, Address
+            Connect with us
           </Text>
           <div style={{ textAlign: 'center' }}>
             <a href="https://talktalk.space/" style={{ display: 'inline-block', margin: '0 5px' }}>

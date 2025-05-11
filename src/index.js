@@ -16,8 +16,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function main() {
-  const studentList = (await readSheet()).slice(10, 11);
-  //const studentList = await readSheet();
+  const studentList = await readSheet();
 
   const classInfoList = await getAllRemainingClasses(studentList);
 
@@ -47,7 +46,7 @@ async function main() {
 
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
-      to: 'sam.lee@epfl.ch',
+      to: email,
       subject: `Hi ${firstName}, here's your weekly class update`,
       html: emailHtml,
     });
