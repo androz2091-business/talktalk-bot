@@ -73,7 +73,11 @@ async function getAllRemainingClasses(studentList) {
         email: member.email,
         name: member.name,
         remaining: currentPack - count,
-        expiration: expiration.toISOString().split('T')[0],
+        expiration: expiration.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }),
         count,
       });
     }
