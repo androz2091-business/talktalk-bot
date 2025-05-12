@@ -46,7 +46,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
           </Section>
 
           <Text style={{ color: '#555', fontSize: '16px', marginBottom: '20px', marginTop: '20px' }}>
-            Don't forget to book all your remaining classes before they expire. Let's keep your learning journey going strong!
+            No te olvides de agendar tus clases antes de que expiren. Sigamos practicando and improving your English.
           </Text>
 
           <Section style={{ textAlign: 'center' }}>
@@ -63,7 +63,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
                 margin: '20px auto 30px'
               }}
             >
-              Book Your Next Class
+              Agenda tu próxima clase
             </Button>
           </Section>
         </Container>
