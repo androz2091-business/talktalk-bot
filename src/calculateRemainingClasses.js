@@ -31,6 +31,8 @@ async function getAllRemainingClasses(studentList) {
       continue;
     }
 
+    console.log(`Processing group ${emails.join('&')}`);
+
     const eventMap = new Map();
 
     for (const email of emails) {
@@ -40,7 +42,7 @@ async function getAllRemainingClasses(studentList) {
         while (nextPage) {
           const res = await axios.get(nextPage, { headers });
           for (const event of res.data.collection) {
-            eventMap.set(event.uri, event); // avoid duplicate events
+            eventMap.set(event.uri, {...event, email}); // avoid duplicate events
           }
           nextPage = res.data.pagination?.next_page || null;
         }
@@ -57,6 +59,7 @@ async function getAllRemainingClasses(studentList) {
 
       if (event.status === 'active') {
         count++;
+        console.log(`BOOKED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
       } else if (event.status === 'canceled' && event.cancellation?.created_at) {
         const canceledAt = new Date(event.cancellation?.created_at);
         const diffMs = start - canceledAt;
@@ -64,6 +67,9 @@ async function getAllRemainingClasses(studentList) {
         // Canceled within 1 hour before class → still counts
         if (diffMs <= 60 * 60 * 1000 && diffMs > 0) {
           count++;
+          console.log(`LATE CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
+        } else {
+          console.log(`EARLY CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
         }
       }
     }

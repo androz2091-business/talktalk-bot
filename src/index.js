@@ -46,7 +46,7 @@ async function main() {
 
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
-      to: email,
+      to: 'andsunlit@gmail.com', // email,
       subject: `Hi ${firstName}, here's your weekly class update`,
       html: emailHtml,
     });
