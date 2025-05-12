@@ -6,23 +6,17 @@ import MyEmail from './MyEmail.js';
 
 import { getAllRemainingClasses } from './calculateRemainingClasses.js';
 import readSheet from './readGoogleSheet.js';
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
-
+import { getTransporter, sendEmail } from './sendGmail.js';
 async function main() {
-  const studentList = await readSheet();
+  const studentList = (await readSheet()).slice(0, 3);
 
   const classInfoList = await getAllRemainingClasses(studentList);
 
   if (classInfoList.length === 0) {
     console.warn('⚠️ No students passed Calendly checks or data was filtered out.');
   }
+
+  const transporter = await getTransporter();
 
   for (const student of classInfoList) {
     const { email, remaining, expiration, count, name } = student;
@@ -44,12 +38,7 @@ async function main() {
     // console.log(count);
     // console.log(expiration);
 
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: 'andsunlit@gmail.com', // email,
-      subject: `Hi ${firstName}, here's your weekly class update`,
-      html: emailHtml,
-    });
+    await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
   }
 }
 
