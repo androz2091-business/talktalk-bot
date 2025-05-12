@@ -22,14 +22,6 @@ async function getAllRemainingClasses(studentList) {
   for (const [groupId, groupMembers] of grouped.entries()) {
     const emails = groupMembers.map(m => m.email);
     const currentPack = groupMembers[0].currentPack;
-    const expirationDate = groupMembers[0].expirationDate;
-
-    const expiration = new Date(expirationDate);
-    const now = new Date();
-    if (expiration < now || isNaN(expiration.getTime())) {
-      console.warn(`⚠️ Skipping group ${emails.join('&')} due to invalid or past expiration date`);
-      continue;
-    }
 
     console.log(`Processing group ${emails.join('&')}`);
 
@@ -79,11 +71,7 @@ async function getAllRemainingClasses(studentList) {
         email: member.email,
         name: member.name,
         remaining: currentPack - count,
-        expiration: expiration.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        }),
+        expiration: member.expirationDate,
         count,
       });
     }

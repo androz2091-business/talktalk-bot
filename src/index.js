@@ -8,7 +8,7 @@ import { getAllRemainingClasses } from './calculateRemainingClasses.js';
 import readSheet from './readGoogleSheet.js';
 import { getTransporter, sendEmail } from './sendGmail.js';
 async function main() {
-  const studentList = (await readSheet()).slice(0, 3);
+  const studentList = (await readSheet()).slice(23, 35);
 
   const classInfoList = await getAllRemainingClasses(studentList);
 

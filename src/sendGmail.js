@@ -44,7 +44,7 @@ async function getTransporter() {
 async function sendEmail(transporter, to, subject, html) {
     const mailOptions = {
         from: process.env.GMAIL_USER,
-        to: 'smnlefort@gmail.com',
+        to: 'andsunlit@gmail.com',
         subject,
         html,
     };

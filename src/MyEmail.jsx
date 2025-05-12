@@ -39,7 +39,7 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
               </Column>
               <Column style={{ textAlign: 'center' }}>
                 <Text style={{ fontSize: '20px' }}>⏰</Text>
-                <Text style={{ fontSize: '16px', fontWeight: 'bold', color: '#1c1b3b' }}>{expirationDate}</Text>
+                <Text style={{ fontSize: '16px', fontWeight: 'bold', color: '#1c1b3b' }}>{expirationDate ? expirationDate : 'TBD'}</Text>
                 <Text style={{ fontSize: '14px', color: '#555' }}>Expiration Date</Text>
               </Column>
             </Row>

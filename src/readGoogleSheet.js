@@ -12,11 +12,24 @@ const auth = new google.auth.GoogleAuth({
   scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
 });
 
+const parseExpDate = (expDateStr, today) => {
+  if (expDateStr == "-") return null;
+  const date = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY'], true);
+  if (!date.isValid() || date.isBefore(today)) {
+    return "INVALID";
+  }
+  return date.toDate().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
+}
+
 async function readSheet() {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client });
 
-  const spreadsheetId = '19xh1to9QBLTzaDWYQ6AYgiUfmWV-t5KlFxl1QsY7SnY';
+  const spreadsheetId = '14T-7rbh8L3_AmFqWZKxt60Fp_oB8ZGj7718lQhB8v0Y';
   const range = 'Hoja 1!A3:D'; // ['Name', 'e-mail', 'Number of classes', 'Date']
 
   const res = await sheets.spreadsheets.values.get({
@@ -48,13 +61,18 @@ async function readSheet() {
     const packStr = rowData['Number of classes']?.trim();
     const expDateStr = rowData['Date']?.trim();
 
+    console.log(`Name: ${name}, Email: ${email}, Pack: ${packStr}, ExpDate: ${expDateStr}`);
+
     if (!email || !packStr || !expDateStr) continue;
   
     const pack = parseInt(packStr);
-    const expDate = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY'], true);
+    const expDate = parseExpDate(expDateStr, today);
   
     if (!email || Number.isNaN(pack) || !expDateStr) continue;
-    if (!expDate.isValid() || expDate.isBefore(today)) continue;
+    if (expDate == "INVALID") {
+      console.log(`Invalid expiration date for ${name} (${email})`);
+      continue;
+    }
 
     const names = name.split(' & ');
     const emails = email.split(' & ');
@@ -68,7 +86,7 @@ async function readSheet() {
         name: names[i].trim(),
         email: emails[i].trim(),
         currentPack: pack,
-        expirationDate: expDate.format('YYYY-MM-DD'),
+        expirationDate: expDate,
         groupId,
       });
     }
