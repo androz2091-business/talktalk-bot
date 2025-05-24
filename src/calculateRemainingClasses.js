@@ -48,8 +48,9 @@ async function getAllRemainingClasses(studentList) {
 
     for (const event of eventMap.values()) {
       const start = new Date(event.start_time);
+      const now = new Date();
 
-      if (event.status === 'active') {
+      if (event.status === 'active' && new Date(event.start_time) <= now) {
         count++;
         console.log(`BOOKED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
       } else if (event.status === 'canceled' && event.cancellation?.created_at) {
@@ -59,9 +60,9 @@ async function getAllRemainingClasses(studentList) {
         // Canceled within 1 hour before class → still counts
         if (diffMs <= 60 * 60 * 1000 && diffMs > 0) {
           count++;
-          console.log(`LATE CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
+          // console.log(`LATE CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
         } else {
-          console.log(`EARLY CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
+          // console.log(`EARLY CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
         }
       }
     }

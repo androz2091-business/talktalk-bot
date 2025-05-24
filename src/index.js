@@ -16,7 +16,7 @@ async function main() {
     console.warn('⚠️ No students passed Calendly checks or data was filtered out.');
   }
 
-  const transporter = await getTransporter();
+  // const transporter = await getTransporter();
 
   for (const student of classInfoList) {
     const { email, remaining, expiration, count, name } = student;
@@ -31,12 +31,12 @@ async function main() {
       })
     );
 
-    console.log(`--- Email to: ${email} ---`);
-    //console.log(emailHtml);
+    // console.log(`--- Email to: ${email} ---`);
+    // console.log(emailHtml);
     // console.log(firstName);
-    // console.log(remaining);
-    // console.log(count);
-    // console.log(expiration);
+    // console.log('Remaining: ', remaining);
+    // console.log('Completed: ', count);
+    // console.log('Expiration: ', expiration);
 
     await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
   }
