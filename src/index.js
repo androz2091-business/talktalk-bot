@@ -16,7 +16,7 @@ async function main() {
     console.warn('⚠️ No students passed Calendly checks or data was filtered out.');
   }
 
-  // const transporter = await getTransporter();
+  const transporter = await getTransporter();
 
   for (const student of classInfoList) {
     const { email, remaining, expiration, count, name } = student;
