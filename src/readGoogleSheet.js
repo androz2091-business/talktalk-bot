@@ -14,7 +14,7 @@ const auth = new google.auth.GoogleAuth({
 
 const parseExpDate = (expDateStr, today) => {
   if (expDateStr == "-") return null;
-  const date = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY'], true);
+  const date = dayjs(expDateStr, ['D/M/YY', 'D/M/YYYY', 'D/MM/YY', 'D/MM/YYYY'], true);
   if (!date.isValid() || date.isBefore(today)) {
     return "INVALID";
   }
@@ -77,13 +77,11 @@ async function readSheet() {
     const names = name.split(' & ');
     const emails = email.split(' & ');
     
-    if (names.length !== emails.length) continue;
-
     const groupId = emails.sort().join('&');
   
     for (let i = 0; i < emails.length; i++) {
       validClients.push({
-        name: names[i].trim(),
+        name: names[i]?.trim() || 'Unknown',
         email: emails[i].trim(),
         currentPack: pack,
         expirationDate: expDate,
