@@ -2,11 +2,11 @@ const axios = require('axios');
 
 const API_BASE = 'https://api.calendly.com';
 const CALENDLY_ORG = 'https://api.calendly.com/organizations/8f7ec085-8b6b-4f5f-81c1-954f7a69f8d0';
-const TOKEN = process.env.CALENDLY_API_TOKEN;
+
 
 async function getAllRemainingClasses(studentList) {
   const headers = {
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${process.env.CALENDLY_API_TOKEN}`,
   };
 
   const grouped = new Map();
@@ -26,6 +26,7 @@ async function getAllRemainingClasses(studentList) {
     console.log(`Processing group ${emails.join('&')}`);
 
     const eventMap = new Map();
+    const monthlyStats = new Map(); // Track classes per month
 
     for (const email of emails) {
       let nextPage = `${API_BASE}/scheduled_events?organization=${encodeURIComponent(CALENDLY_ORG)}&invitee_email=${encodeURIComponent(email)}`;
@@ -35,6 +36,13 @@ async function getAllRemainingClasses(studentList) {
           const res = await axios.get(nextPage, { headers });
           for (const event of res.data.collection) {
             eventMap.set(event.uri, {...event, email}); // avoid duplicate events
+            
+            // Track monthly statistics
+            if (event.status === 'active' || (event.status === 'canceled' && event.cancellation?.created_at)) {
+              const date = new Date(event.start_time);
+              const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+              monthlyStats.set(monthKey, (monthlyStats.get(monthKey) || 0) + 1);
+            }
           }
           nextPage = res.data.pagination?.next_page || null;
         }
@@ -67,6 +75,14 @@ async function getAllRemainingClasses(studentList) {
       }
     }
 
+    // Convert monthly stats to array and sort by date
+    const monthlyData = Array.from(monthlyStats.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, count]) => ({
+        month,
+        count
+      }));
+
     for (const member of groupMembers) {
       results.push({
         email: member.email,
@@ -74,6 +90,7 @@ async function getAllRemainingClasses(studentList) {
         remaining: currentPack - count,
         expiration: member.expirationDate,
         count,
+        monthlyStats: monthlyData
       });
     }
   }
