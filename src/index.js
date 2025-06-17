@@ -38,7 +38,7 @@ async function main() {
     // console.log('Completed: ', count);
     // console.log('Expiration: ', expiration);
 
-    await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
+    // await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
   }
 }
 

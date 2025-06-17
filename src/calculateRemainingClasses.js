@@ -53,6 +53,7 @@ async function getAllRemainingClasses(studentList) {
     }
 
     let count = 0;
+    let completedClasses = [];
 
     for (const event of eventMap.values()) {
       const start = new Date(event.start_time);
@@ -60,6 +61,11 @@ async function getAllRemainingClasses(studentList) {
 
       if (event.status === 'active' && new Date(event.start_time) <= now) {
         count++;
+        completedClasses.push({
+          date: event.start_time,
+          title: event.name || (event.event_memberships && event.event_memberships[0]?.user_name) || '',
+          cancelled: false
+        });
         console.log(`BOOKED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
       } else if (event.status === 'canceled' && event.cancellation?.created_at) {
         const canceledAt = new Date(event.cancellation?.created_at);
@@ -68,9 +74,20 @@ async function getAllRemainingClasses(studentList) {
         // Canceled within 1 hour before class → still counts
         if (diffMs <= 60 * 60 * 1000 && diffMs > 0) {
           count++;
+          completedClasses.push({
+            date: event.start_time,
+            title: event.name || (event.event_memberships && event.event_memberships[0]?.user_name) || '',
+            cancelled: true
+          });
           // console.log(`LATE CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
         } else {
-          // console.log(`EARLY CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
+          console.log(`EARLY CANCELED ${event.email}: ${event.event_memberships[0].user_name} ${new Date(event?.start_time).toLocaleString()}`);
+          // Early cancelled, still add to list but not counted
+          completedClasses.push({
+            date: event.start_time,
+            title: event.name || (event.event_memberships && event.event_memberships[0]?.user_name) || '',
+            cancelled: true
+          });
         }
       }
     }
@@ -90,7 +107,8 @@ async function getAllRemainingClasses(studentList) {
         remaining: currentPack - count,
         expiration: member.expirationDate,
         count,
-        monthlyStats: monthlyData
+        monthlyStats: monthlyData,
+        completedClasses
       });
     }
   }

@@ -1,10 +1,62 @@
+body {
+    background: #fff;
+    color: #1D1C3B;
+}
+
+.header-line, .footer-line {
+    width: 100vw;
+    height: 6px;
+    background: linear-gradient(90deg, #EB257A 0%, #FEF538 100%);
+    margin-bottom: 24px;
+}
+.footer-line {
+    margin-top: 32px;
+    margin-bottom: 0;
+}
+
 .card {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border: 1.5px solid #1D1C3B;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(29,28,59,0.06);
 }
 
 .card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    background: #1D1C3B;
+    color: #fff;
+    border-radius: 16px 16px 0 0;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.card-header:first-child {
+    border-radius: 16px 16px 0 0 !important;
+}
+
+.btn-main {
+    background: #FEF538;
+    color: #1D1C3B;
+    border: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+.btn-main:hover {
+    background: #EB257A;
+    color: #fff;
+}
+
+.text-highlight {
+    color: #EB257A;
+    font-weight: bold;
+}
+
+.breadcrumb {
+    background: transparent;
+}
+
+.breadcrumb-item.active {
+    color: #1D1C3B;
 }
 
 .table-hover tbody tr:hover {
@@ -26,4 +78,15 @@
 canvas {
     max-width: 100%;
     height: auto !important;
+}
+
+.cancelled-class {
+    color: #EB257A !important;
+    font-weight: normal;
+}
+
+h1.mb-0, .dashboard-title {
+    color: #1D1C3B;
+    font-weight: 700;
+    letter-spacing: -1px;
 } 

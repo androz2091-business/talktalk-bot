@@ -81,8 +81,8 @@ app.get('/refresh', async (req, res) => {
             timestamp: null,
             isInitializing: false
         };
-        await initializeCache();
         res.redirect('/');
+        await initializeCache();
     } catch (error) {
         console.error('Error refreshing cache:', error);
         res.status(500).send('Error refreshing data');
