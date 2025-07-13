@@ -120,6 +120,7 @@ async function getAllRemainingClasses(studentList) {
       results.push({
         email: member.email,
         name: member.name,
+        currentPack: currentPack,
         remaining: currentPack - count,
         expiration: member.expirationDate,
         count,
