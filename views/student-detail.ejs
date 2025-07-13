@@ -5,54 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Details - <%= student.name %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-    <div class="container mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= student.name %></li>
-            </ol>
-        </nav>
-
-        <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.7); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
-            <div class="spinner-border text-primary" role="status" style="width:4rem; height:4rem;">
-                <span class="visually-hidden">Loading...</span>
+<body class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="dashboard-title">Student Details</h1>
+                    <p class="dashboard-subtitle"><%= student.name %></p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="/" class="btn btn-secondary me-2">← Back to Dashboard</a>
+                </div>
             </div>
-            <div class="mt-3 text-center fw-bold" style="font-size:1.5rem;">로딩중...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+            <div class="loading-spinner"></div>
+            <div class="mt-3 text-center fw-bold" style="font-size:1.2rem; color: #1D1C3B;">Loading...</div>
         </div>
 
+        <!-- Calculate completion rate -->
+        <% 
+        const total = (student.count || 0) + (student.remaining || 0);
+        const completionRate = total > 0 ? Math.round(((student.count || 0) / total) * 100) : 0;
+        %>
+
+        <!-- Student Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <span>📊</span>
+                </div>
+                <div class="stat-value"><%= completionRate %>%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+
+             <div class="stat-card">
+                <div class="stat-icon warning">
+                    <span>⏳</span>
+                </div>
+                <div class="stat-value"><%= student.remaining || 0 %></div>
+                <div class="stat-label">Remaining</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <span>📅</span>
+                </div>
+                <div class="stat-value">
+                    <% if (student.expiration === 'INVALID') { %>
+                        <small>Expired</small>
+                    <% } else if (student.expiration && student.expiration !== 'TBD') { %>
+                        <small style="font-size: 0.9rem;"><%= student.expiration %></small>
+                    <% } else { %>
+                        <small>TBD</small>
+                    <% } %>
+                </div>
+                <div class="stat-label">Expiration Date</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
         <div class="row">
-            <div class="col-md-6">
+            <!-- Student Information -->
+            <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Student Information</h2>
+                        <h5 class="mb-0">Student Information</h5>
                     </div>
                     <div class="card-body">
-                        <p><strong>Name:</strong> <%= student.name %></p>
-                        <p><strong>Email:</strong> <%= student.email %></p>
-                        <p><strong>Total Classes:</strong> <%= student.currentPack %></p>
-                        <p><strong>Completed Classes:</strong> <%= student.count %></p>
-                        <p><strong>Remaining Classes:</strong> <%= student.remaining %></p>
-                        <p><strong>Expiration Date:</strong> <%= student.expiration %></p>
+                        <div class="text-center mb-4">
+                            <h6 class="mt-3 mb-1"><%= student.name || 'Unknown Student' %></h6>
+                            <p class="text-muted small"><%= student.email %></p>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="text-muted small">Package</div>
+                            <div class="fw-semibold"><%= student.currentPack || 0 %> Classes Total</div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="text-muted small">Progress</div>
+                            <div class="progress mb-2" style="height: 10px; border-radius: 5px;">
+                                <div class="progress-bar" style="width: <%= completionRate %>%; background: linear-gradient(90deg, #EB257A, #FEF538);"></div>
+                            </div>
+                            <div class="small"><%= student.count || 0 %> of <%= student.currentPack || 0 %> classes completed</div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="text-muted small">Expiration Date</div>
+                            <div class="fw-semibold">
+                                <% if (student.expiration && student.expiration !== 'TBD') { %>
+                                    <%= student.expiration %>
+                                <% } else { %>
+                                    <span class="text-warning">To Be Determined</span>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="text-muted small">Status</div>
+                            <div>
+                                <% 
+                                const remaining = student.remaining || 0;
+                                let statusClass = 'badge-success';
+                                let statusText = 'Active';
+                                if (remaining === 0) {
+                                    statusClass = 'badge-danger';
+                                    statusText = 'Expired';
+                                } else if (remaining <= 3) {
+                                    statusClass = 'badge-warning';
+                                    statusText = 'Low Credits';
+                                }
+                                %>
+                                <span class="badge <%= statusClass %>"><%= statusText %></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <!-- Charts Section -->
+            <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h2 class="h5 mb-0">Class Progress</h2>
+                        <h5 class="mb-0">Class Progress Analytics</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-5">
-                                <canvas id="progressChart" style="max-height: 300px;"></canvas>
+                            <div class="col-md-6">
+                                <div class="chart-container mb-4 mb-md-0">
+                                    <h6 class="text-center mb-3">Progress Overview</h6>
+                                    <canvas id="progressChart" style="max-height: 250px;"></canvas>
+                                </div>
                             </div>
-                            <div class="col-md-7">
-                                <canvas id="monthlyChart"></canvas>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h6 class="text-center mb-3">Monthly Activity</h6>
+                                    <canvas id="monthlyChart" style="max-height: 250px;"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -60,82 +159,67 @@
             </div>
         </div>
 
-        <div class="row">
-          <div>
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="h5">Class Statistics</h2>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h3 class="h5">Completion Rate</h3>
-                                    <p class="h3 mb-0">
-                                        <% if (student.currentPack > 0) { %><%= Math.round((student.count / student.currentPack) * 100) %>%<% } else { %>0%<% } %>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h3 class="h5">Classes Remaining</h3>
-                                    <p class="h3 mb-0"><%= student.remaining || 0 %></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h3 class="h5">Expiration Status</h3>
-                                    <p class="h3 mb-0">
-                                        <% if (student.expiration === 'INVALID') { %><span class="text-danger">Expired</span><% } else if (student.expiration) { %><span class="text-success">Valid</span><% } else { %><span class="text-warning">No Date</span><% } %>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </div>
-        </div>
-
+        <!-- Completed Classes -->
         <% if (student.completedClasses && student.completedClasses.length > 0) { %>
-            <div class="row">
-              <div>
-                <div class="card mt-4">
-                  <div class="card-header"><h2 class="h5">Completed Classes</h2></div>
-                  <ul class="list-group list-group-flush">
-                    <% student.completedClasses.forEach(cls => { %>
-                      <li class="list-group-item<%= cls.cancelled ? ' cancelled-class' : '' %>">
-                        <%= new Date(cls.date).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) %>
-                        <% if (cls.title) { %> - <%= cls.title %><% } %>
-                        <% if (cls.cancelled) { %> <span>(Cancelled)</span><% } %>
-                      </li>
-                    <% }) %>
-                  </ul>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Class History</h5>
                 </div>
-              </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 16px 20px;">Date & Time</th>
+                                    <th style="padding: 16px 20px;">Title</th>
+                                    <th style="padding: 16px 20px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% student.completedClasses.forEach(cls => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">
+                                                <%= new Date(cls.date).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>, 
+                                                <%= new Date(cls.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if (cls.title) { %>
+                                                <div class="text-muted mt-2"><%= cls.title %></div>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (cls.cancelled) { %>
+                                                <span class="badge badge-danger">Cancelled</span>
+                                            <% } else { %>
+                                                <span class="badge badge-success">Completed</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-          <% } %>   
+        <% } %>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Create the progress pie chart
-        const pieCtx = document.getElementById('progressChart').getContext('2d');
-        new Chart(pieCtx, {
+        // Progress Pie Chart
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        new Chart(progressCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Completed', 'Remaining'],
                 datasets: [{
-                    data: [<%= student.count %>, <%= student.remaining %>],
+                    data: [<%= student.count || 0 %>, <%= student.remaining || 0 %>],
                     backgroundColor: [
-                        '#EB257A', // Completed
-                        '#FEF538'  // Remaining
+                        '#EB257A',
+                        '#FEF538'
                     ],
-                    borderColor: '#1D1C3B',
                     borderWidth: 2
                 }]
             },
@@ -146,36 +230,46 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            boxWidth: 12
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
                         }
                     }
-                }
+                },
+                cutout: '60%'
             }
         });
 
-        // Create the monthly progress line chart
-        const lineCtx = document.getElementById('monthlyChart').getContext('2d');
+        // Monthly Chart
+        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+        const monthlyStats = <%- JSON.stringify(student.monthlyStats || []) %>;
         
-        // Format monthly data
-        const monthlyStats = <%- JSON.stringify(student.monthlyStats) %>;
-        const monthlyData = {
-            labels: monthlyStats.map(stat => {
-                const [year, month] = stat.month.split('-');
-                return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short' });
-            }),
-            datasets: [{
-                label: 'Classes per Month',
-                data: monthlyStats.map(stat => stat.count),
-                borderColor: '#EB257A',
-                backgroundColor: '#FEF538',
-                tension: 0.1,
-                fill: true
-            }]
-        };
+        const monthlyData = monthlyStats.length > 0 ? monthlyStats.map(stat => ({
+            month: stat.month,
+            count: stat.count
+        })) : [];
 
-        new Chart(lineCtx, {
+        new Chart(monthlyCtx, {
             type: 'line',
-            data: monthlyData,
+            data: {
+                labels: monthlyData.map(d => d.month),
+                datasets: [{
+                    label: 'Classes per Month',
+                    data: monthlyData.map(d => d.count),
+                    borderColor: 'rgba(235, 37, 122, 1)',
+                    backgroundColor: 'rgba(235, 37, 122, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(235, 37, 122, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -187,30 +281,28 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            color: '#1D1C3B'
-                        },
                         grid: {
-                            color: '#FEF53822'
+                            color: 'rgba(0,0,0,0.1)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
                         }
                     },
                     x: {
-                        ticks: {
-                            color: '#1D1C3B'
-                        },
                         grid: {
-                            color: '#EB257A22'
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
                         }
                     }
                 }
             }
         });
-
-        document.getElementById('refreshBtn').addEventListener('click', function() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            location.reload();
-        });
     </script>
 </body>
-</html> 
+</html>
