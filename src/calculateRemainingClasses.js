@@ -3,7 +3,6 @@ const axios = require('axios');
 const API_BASE = 'https://api.calendly.com';
 const CALENDLY_ORG = 'https://api.calendly.com/organizations/8f7ec085-8b6b-4f5f-81c1-954f7a69f8d0';
 
-
 async function getAllRemainingClasses(studentList) {
   const headers = {
     Authorization: `Bearer ${process.env.CALENDLY_API_TOKEN}`,
@@ -26,7 +25,7 @@ async function getAllRemainingClasses(studentList) {
     console.log(`Processing group ${emails.join('&')}`);
 
     const eventMap = new Map();
-    const monthlyStats = new Map(); // Track classes per month
+    const monthlyStats = new Map();
 
     for (const email of emails) {
       let nextPage = `${API_BASE}/scheduled_events?organization=${encodeURIComponent(CALENDLY_ORG)}&invitee_email=${encodeURIComponent(email)}`;
@@ -37,7 +36,6 @@ async function getAllRemainingClasses(studentList) {
           for (const event of res.data.collection) {
             eventMap.set(event.uri, {...event, email}); // avoid duplicate events
             
-            // Track monthly statistics
             if (event.status === 'active' || (event.status === 'canceled' && event.cancellation?.created_at)) {
               const date = new Date(event.start_time);
               const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -54,10 +52,16 @@ async function getAllRemainingClasses(studentList) {
 
     let count = 0;
     let completedClasses = [];
+    let hasRecentBooking = false; // recent booking within 2 weeks
 
     for (const event of eventMap.values()) {
       const start = new Date(event.start_time);
       const now = new Date();
+      const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+
+      if (start >= twoWeeksAgo && start <= now && event.status === 'active') {
+        hasRecentBooking = true;
+      }
 
       if (event.status === 'active' && new Date(event.start_time) <= now) {
         count++;
@@ -101,6 +105,18 @@ async function getAllRemainingClasses(studentList) {
       }));
 
     for (const member of groupMembers) {
+      let status, statusClass;
+      if (hasRecentBooking) {
+        status = 'Active';
+        statusClass = 'badge-success';
+      } else if (currentPack - count > 0) {
+        status = 'Inactive';
+        statusClass = 'badge-warning';
+      } else {
+        status = 'Expired';
+        statusClass = 'badge-danger';
+      }
+
       results.push({
         email: member.email,
         name: member.name,
@@ -108,7 +124,10 @@ async function getAllRemainingClasses(studentList) {
         expiration: member.expirationDate,
         count,
         monthlyStats: monthlyData,
-        completedClasses
+        completedClasses,
+        hasRecentBooking,
+        status,
+        statusClass
       });
     }
   }
