@@ -6,8 +6,7 @@ const { getAllRemainingClasses } = require('./src/calculateRemainingClasses');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Cache implementation
-const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
+const CACHE_DURATION = 15 * 60 * 1000;
 let cache = {
     data: null,
     timestamp: null,
@@ -16,7 +15,7 @@ let cache = {
 
 async function initializeCache() {
     if (cache.isInitializing) {
-        return; // Another initialization is in progress
+        return;
     }
 
     try {
@@ -40,12 +39,11 @@ async function initializeCache() {
 async function getCachedData() {
     const now = Date.now();
     
-    // If cache is empty or expired, trigger initialization
     if (!cache.data || !cache.timestamp || (now - cache.timestamp) > CACHE_DURATION) {
         if (!cache.isInitializing) {
             initializeCache();
         }
-        return null; // Return null to indicate cache is not ready
+        return null;
     }
     
     return cache.data;
@@ -56,26 +54,21 @@ console.log(process.env.GMAIL_USER)
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// API endpoint to check cache status
 app.get('/api/cache-status', (req, res) => {
     const now = Date.now();
     const isReady = cache.data && cache.timestamp && (now - cache.timestamp) <= CACHE_DURATION;
     res.json({ ready: isReady });
 });
 
-// Force refresh route
 app.get('/refresh', async (req, res) => {
     try {
-        // Force cache reinitialization
         cache = {
             data: null,
             timestamp: null,
@@ -89,12 +82,10 @@ app.get('/refresh', async (req, res) => {
     }
 });
 
-// Routes
 app.get('/', async (req, res) => {
     try {
         const students = await getCachedData();
         if (!students) {
-            // If cache is not ready, show loading page
             return res.render('loading');
         }
         res.render('index', { students });
@@ -108,7 +99,6 @@ app.get('/student/:email', async (req, res) => {
     try {
         const students = await getCachedData();
         if (!students) {
-            // If cache is not ready, show loading page
             return res.render('loading');
         }
         const student = students.find(s => s.email === req.params.email);
@@ -123,12 +113,10 @@ app.get('/student/:email', async (req, res) => {
     }
 });
 
-// Initialize cache on server start
 initializeCache().catch(error => {
     console.error('Failed to initialize cache on startup:', error);
 });
 
-// Start server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 }); 
