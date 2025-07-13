@@ -63,8 +63,14 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>Student</th>
-                            <th>Email</th>
+                            <th onclick="sortTable(0)" style="cursor: pointer;">
+                                Name 
+                                <span class="sort-indicator" id="sort-0">⇅</span>
+                            </th>
+                            <th onclick="sortTable(1)" style="cursor: pointer;">
+                                Email 
+                                <span class="sort-indicator" id="sort-1">⇅</span>
+                            </th>
                             <th>Progress</th>
                             <th>
                                 Status 
@@ -73,7 +79,10 @@
                                     ⓘ
                                 </span>
                             </th>
-                            <th>Expiration</th>
+                            <th onclick="sortTable(4)" style="cursor: pointer;">
+                                Expiration 
+                                <span class="sort-indicator" id="sort-4">⇅</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -124,6 +133,60 @@
         const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        // Sort list
+        let sortDirection = {};
+
+        function sortTable(columnIndex) {
+            const table = document.querySelector('.table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            const currentDirection = sortDirection[columnIndex] || 'asc';
+            const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+            sortDirection[columnIndex] = newDirection;
+            
+            document.querySelectorAll('.sort-indicator').forEach(indicator => {
+                indicator.textContent = '⇅';
+            });
+            document.getElementById(`sort-${columnIndex}`).textContent = newDirection === 'asc' ? '↑' : '↓';
+            
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                
+                if (columnIndex === 0) { // Name
+                    aValue = a.cells[0].textContent.trim().toLowerCase();
+                    bValue = b.cells[0].textContent.trim().toLowerCase();
+                } else if (columnIndex === 1) { // Email
+                    aValue = a.cells[1].textContent.trim().toLowerCase();
+                    bValue = b.cells[1].textContent.trim().toLowerCase();
+                } else if (columnIndex === 4) { // Expiration
+                    aValue = a.cells[4].textContent.trim();
+                    bValue = b.cells[4].textContent.trim();
+                    
+                    if (aValue === 'TBD') aValue = '9999-12-31';
+                    if (bValue === 'TBD') bValue = '9999-12-31';
+                    if (aValue === 'Expired') aValue = '0000-01-01';
+                    if (bValue === 'Expired') bValue = '0000-01-01';
+                    
+                    // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
+                    if (aValue.includes('/')) {
+                        const [day, month, year] = aValue.split('/');
+                        aValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                    }
+                    if (bValue.includes('/')) {
+                        const [day, month, year] = bValue.split('/');
+                        bValue = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                    }
+                }
+                
+                if (aValue < bValue) return newDirection === 'asc' ? -1 : 1;
+                if (aValue > bValue) return newDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
 
         document.getElementById('refreshBtn').addEventListener('click', function() {
             const button = this;

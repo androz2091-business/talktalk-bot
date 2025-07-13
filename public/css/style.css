@@ -192,6 +192,23 @@ body {
     transition: background-color 0.2s ease;
 }
 
+/* Table Sorting */
+.sort-indicator {
+    font-size: 0.8rem;
+    margin-left: 5px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+th[onclick]:hover .sort-indicator {
+    opacity: 1;
+}
+
+th[onclick]:hover {
+    background-color: rgba(235, 37, 122, 0.05);
+    transition: background-color 0.2s ease;
+}
+
 /* Buttons */
 .btn-main {
     background: linear-gradient(135deg, #EB257A, #ff4081);
