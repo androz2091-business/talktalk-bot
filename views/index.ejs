@@ -36,6 +36,14 @@
                 <div class="stat-value"><%= students.length %></div>
                 <div class="stat-label">Total Students</div>
             </div>
+
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <span>⏳</span>
+                </div>
+                <div class="stat-value"><%= students.reduce((sum, s) => sum + (s.remaining || 0), 0) %></div>
+                <div class="stat-label">Classes Remaining</div>
+            </div>
             
             <div class="stat-card">
                 <div class="stat-icon success">
@@ -43,14 +51,6 @@
                 </div>
                 <div class="stat-value"><%= students.reduce((sum, s) => sum + (s.count || 0), 0) %></div>
                 <div class="stat-label">Classes Completed</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon warning">
-                    <span>📚</span>
-                </div>
-                <div class="stat-value"><%= students.reduce((sum, s) => sum + (s.remaining || 0), 0) %></div>
-                <div class="stat-label">Classes Remaining</div>
             </div>
         </div>
 
@@ -65,12 +65,11 @@
                         <tr>
                             <th>Student</th>
                             <th>Email</th>
-                            <th>Total Classes</th>
                             <th>Progress</th>
                             <th>
                                 Status 
-                                <span class="status-info-icon" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                      title="Active: has bookings within 2 weeks | Inactive: no bookings in the last 2 weeks | Expired: all classes used">
+                                <span class="status-info-icon" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" 
+                                      title="- Active: bookings within the last 2 weeks <br>- Inactive: no bookings in the last 2 weeks <br>- Expired: all classes used">
                                     ⓘ
                                 </span>
                             </th>
@@ -82,16 +81,13 @@
                             <tr onclick="window.location='/student/<%= student.email %>'" style="cursor: pointer;">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div>
-                                            <div class="fw-semibold"><%= student.name || 'Unknown' %></div>
+                                        <div style="min-width: 0; flex: 1;">
+                                            <div class="fw-semibold text-nowrap text-truncate"><%= student.name || 'Unknown' %></div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="text-muted small"><%= student.email %></div>
-                                </td>
-                                <td>
-                                    <div class="small"><%= student.currentPack || 0 %></div>
                                 </td>
                                 <td>
                                     <div class="progress" style="height: 8px; border-radius: 4px;">

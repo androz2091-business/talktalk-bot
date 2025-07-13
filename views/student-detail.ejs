@@ -53,7 +53,7 @@
                     <span>⏳</span>
                 </div>
                 <div class="stat-value"><%= student.remaining || 0 %></div>
-                <div class="stat-label">Remaining</div>
+                <div class="stat-label">Classes Remaining</div>
             </div>
 
             <div class="stat-card">
@@ -62,11 +62,11 @@
                 </div>
                 <div class="stat-value">
                     <% if (student.expiration === 'INVALID') { %>
-                        <small>Expired</small>
+                        Expired
                     <% } else if (student.expiration && student.expiration !== 'TBD') { %>
-                        <small style="font-size: 0.9rem;"><%= student.expiration %></small>
+                        <span style="font-size: 1.9rem;"><%= student.expiration %></span>
                     <% } else { %>
-                        <small>TBD</small>
+                        TBD
                     <% } %>
                 </div>
                 <div class="stat-label">Expiration Date</div>
@@ -178,18 +178,18 @@
                             <tbody>
                                 <% student.completedClasses.forEach(cls => { %>
                                     <tr>
-                                        <td>
+                                        <td style="padding: 14px 20px;">
                                             <div class="fw-semibold">
                                                 <%= new Date(cls.date).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }) %>, 
                                                 <%= new Date(cls.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) %>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td style="padding: 14px 20px;">
                                             <% if (cls.title) { %>
                                                 <div class="text-muted mt-2"><%= cls.title %></div>
                                             <% } %>
                                         </td>
-                                        <td>
+                                        <td style="padding: 14px 20px;">
                                             <% if (cls.cancelled) { %>
                                                 <span class="badge badge-danger">Cancelled</span>
                                             <% } else { %>
