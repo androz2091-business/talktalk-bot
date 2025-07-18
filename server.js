@@ -201,8 +201,12 @@ app.get('/student/:email', requireDashboardAuth, async (req, res) => {
         if (!student) {
             return res.status(404).send('Student not found');
         }
-        const groupMembers = students.filter(s => s.groupId === student.groupId);
-        student.emails = groupMembers.map(m => m.email);
+        if (student.isAlone) {
+            const groupMembers = students.filter(s => s.groupId === student.groupId);
+            student.emails = groupMembers.map(m => m.email);
+        } else {
+            student.emails = [student.email];
+        }
         res.render('student-detail', { student });
     } catch (error) {
         console.error('Error fetching student data:', error);
