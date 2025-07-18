@@ -96,7 +96,15 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-muted small"><%= student.email %></div>
+                                    <div class="text-muted small">
+                                        <%- Array.isArray(student.emails) ? student.emails.join('<br>') : student.email %>
+                                    </div>
+                                    <!-- <div style="font-size:11px;color:#888;">
+                                        <b>groupId:</b> <%= student.groupId %> |
+                                        <b>isAlone:</b> <%= student.isAlone %> |
+                                        <b>name:</b> <%= student.name %> |
+                                        <b>emails:</b> <%= JSON.stringify(student.emails) %>
+                                    </div> -->
                                 </td>
                                 <td>
                                     <div class="progress" style="height: 8px; border-radius: 4px;">

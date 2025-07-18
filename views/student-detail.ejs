@@ -84,7 +84,7 @@
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <h6 class="mt-3 mb-1"><%= student.name || 'Unknown Student' %></h6>
-                            <p class="text-muted small"><%= student.email %></p>
+                            <p class="text-muted small"><%- Array.isArray(student.emails) ? student.emails.join('<br>') : student.email %></p>
                         </div>
                         
                         <div class="info-item mb-3">

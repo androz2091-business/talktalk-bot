@@ -1,6 +1,4 @@
 const { google } = require('googleapis');
-const fs = require('fs');
-const path = require('path');
 
 const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
@@ -98,13 +96,15 @@ async function readSheet() {
     const groupId = emails.sort().join('&');
 
     for (let i = 0; i < emails.length; i++) {
+      const isAlone = names.length === 1 && emails.length > 1; // alone if only one name but multiple emails
       validClients.push({
-        name: names[i]?.trim() || 'Unknown',
+        name: names[i]?.trim() || names[0]?.trim() || 'Unknown',
         email: emails[i].trim(),
         currentPack: pack,
         expirationDate: expDate,
         groupId,
         comment: comment || '',
+        isAlone,
       });
     }
   }

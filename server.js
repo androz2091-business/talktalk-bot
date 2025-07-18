@@ -76,7 +76,6 @@ app.post('/login', (req, res) => {
   `);
 });
 
-
 const CACHE_DURATION = 15 * 60 * 1000;
 let cache = {
     data: null,
@@ -152,7 +151,40 @@ app.get('/', requireDashboardAuth, async (req, res) => {
         if (!students) {
             return res.render('loading');
         }
-        res.render('index', { students });
+        const grouped = new Map();
+        for (const student of students) {
+            if (!grouped.has(student.groupId)) grouped.set(student.groupId, []);
+            grouped.get(student.groupId).push(student);
+        }
+        const studentGroups = [];
+        for (const [groupId, groupMembers] of grouped.entries()) {
+            if (groupMembers.every(m => m.isAlone)) {
+                console.log(`Group ${groupId} has all alone member, merging into one entry`);
+                console.log(`Adding member ${groupMembers.map(m => m.name).join(', ')} (${groupMembers.map(m => m.email).join(', ')})`);
+                // single name with multiple emails
+                studentGroups.push({
+                    name: groupMembers[0].name,
+                    emails: groupMembers.map(m => m.email),
+                    groupId: groupId,
+                    isAlone: groupMembers[0].isAlone,
+                    ...groupMembers[0],
+                });
+            } else {
+                // group with multiple members || single name with single email
+                console.log(`Group ${groupId} has ${groupMembers.length} members`);
+                groupMembers.forEach(member => {
+                    console.log(`Adding member! ${member.name} (${member.email})`);
+                    studentGroups.push({
+                        name: member.name,
+                        emails: [member.email],
+                        groupId: member.groupId,
+                        isAlone: member.isAlone,
+                        ...member,
+                    });
+                });
+            }
+        }
+        res.render('index', { students: studentGroups });
     } catch (error) {
         console.error('Error fetching student data:', error);
         res.status(500).send('Error fetching student data');
@@ -169,6 +201,8 @@ app.get('/student/:email', requireDashboardAuth, async (req, res) => {
         if (!student) {
             return res.status(404).send('Student not found');
         }
+        const groupMembers = students.filter(s => s.groupId === student.groupId);
+        student.emails = groupMembers.map(m => m.email);
         res.render('student-detail', { student });
     } catch (error) {
         console.error('Error fetching student data:', error);

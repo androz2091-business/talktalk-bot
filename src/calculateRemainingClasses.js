@@ -130,6 +130,8 @@ async function getAllRemainingClasses(studentList) {
         status,
         statusClass,
         comment: member.comment,
+        groupId: member.groupId,
+        isAlone: member.isAlone,
       });
     }
   }
