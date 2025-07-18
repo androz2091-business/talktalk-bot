@@ -330,16 +330,6 @@ canvas {
     color: #EB257A;
 }
 
-/* Login Page Styles */
-body {
-  background: #f7f7fa;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .login-overlay {
   display: flex;
   align-items: center;
