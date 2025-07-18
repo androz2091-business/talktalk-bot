@@ -1,10 +1,81 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const readSheet = require('./src/readGoogleSheet');
 const { getAllRemainingClasses } = require('./src/calculateRemainingClasses');
-
 const dotenv = require('dotenv');
 dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+function requireDashboardAuth(req, res, next) {
+  if (req.cookies && req.cookies.dashboardAuth === '1') {
+    return next();
+  }
+  return res.redirect('/login');
+}
+
+app.get('/login', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dashboard Login - TalkTalk</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="/css/style.css" rel="stylesheet">
+    </head>
+    <body>
+      <div class="login-overlay">
+        <form class="login-box" method="POST" action="/login">
+          <h2>Dashboard Login</h2>
+          <input type="password" name="password" placeholder="Enter Password" required />
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+app.post('/login', (req, res) => {
+  const { password } = req.body;
+  if (password === process.env.DASHBOARD_PASSWORD) {
+    res.cookie('dashboardAuth', '1', { httpOnly: true });
+    return res.redirect('/');
+  }
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dashboard Login - TalkTalk</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="/css/style.css" rel="stylesheet">
+      <style>
+        body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .error-message { text-align: center; color: #c81e63; font-size: 1.1rem; margin-top: 48px; }
+        a { color: #EB257A; text-decoration: underline; }
+      </style>
+    </head>
+    <body>
+      <div class="error-message">
+        Incorrect password.<br>
+        <a href="/login">Try again</a>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 
 const CACHE_DURATION = 15 * 60 * 1000;
 let cache = {
@@ -49,17 +120,11 @@ async function getCachedData() {
     return cache.data;
 }
 
-console.log(process.env.GMAIL_USER)
 
-const app = express();
-const port = process.env.PORT || 3000;
+console.log(process.env.GMAIL_USER)
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
 
 app.get('/api/cache-status', (req, res) => {
     const now = Date.now();
@@ -82,7 +147,8 @@ app.get('/refresh', async (req, res) => {
     }
 });
 
-app.get('/', async (req, res) => {
+
+app.get('/', requireDashboardAuth, async (req, res) => {
     try {
         const students = await getCachedData();
         if (!students) {
@@ -95,14 +161,14 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get('/student/:email', async (req, res) => {
+
+app.get('/student/:email', requireDashboardAuth, async (req, res) => {
     try {
         const students = await getCachedData();
         if (!students) {
             return res.render('loading');
         }
         const student = students.find(s => s.email === req.params.email);
-        
         if (!student) {
             return res.status(404).send('Student not found');
         }
@@ -119,4 +185,4 @@ initializeCache().catch(error => {
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-}); 
+});
