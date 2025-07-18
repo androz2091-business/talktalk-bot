@@ -1,7 +1,7 @@
 import React from 'react';
 import { Html, Head, Preview, Body, Container, Text, Heading, Button, Img, Section, Row, Column } from '@react-email/components';
 
-export default function MyEmail({ userName, completedClasses, remainingClasses, expirationDate }) {
+export default function MyEmail({ userName, completedClasses, remainingClasses, expirationDate, comment }) {
   return (
     <Html lang="en">
       <Head />
@@ -44,6 +44,17 @@ export default function MyEmail({ userName, completedClasses, remainingClasses, 
               </Column>
             </Row>
           </Section>
+
+          {comment && (
+            <Section style={{ margin: '20px 0 0 0', padding: 0 }}>
+              <Text style={{ fontSize: '16px', color: '#eb257a', fontWeight: '600', marginBottom: '10px' }}>
+                Weekly Highlight
+              </Text>
+              <Text style={{ color: '#555', fontSize: '16px', marginBottom: '20px', whiteSpace: 'pre-line' }}>
+                {comment}
+              </Text>
+            </Section>
+          )}
 
           <Text style={{ color: '#555', fontSize: '16px', marginBottom: '20px', marginTop: '20px' }}>
             No te olvides de agendar tus clases antes de que expiren. Sigamos practicando and improving your English.

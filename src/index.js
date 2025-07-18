@@ -28,6 +28,7 @@ async function main() {
         remainingClasses: remaining,
         completedClasses: count,
         expirationDate: expiration,
+        comment: student.comment,
       })
     );
 

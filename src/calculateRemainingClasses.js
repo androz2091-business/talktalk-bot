@@ -128,7 +128,8 @@ async function getAllRemainingClasses(studentList) {
         completedClasses,
         hasRecentBooking,
         status,
-        statusClass
+        statusClass,
+        comment: member.comment,
       });
     }
   }

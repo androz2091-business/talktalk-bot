@@ -6,10 +6,8 @@ const dayjs = require('dayjs');
 const customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
-// Load environment variables
 require('dotenv').config();
 
-// Create credentials object from environment variables
 const credentials = {
   type: process.env.GOOGLE_SERVICE_ACCOUNT_TYPE,
   project_id: process.env.GOOGLE_PROJECT_ID,
@@ -47,7 +45,7 @@ async function readSheet() {
   const sheets = google.sheets({ version: 'v4', auth: client });
 
   const spreadsheetId = '14T-7rbh8L3_AmFqWZKxt60Fp_oB8ZGj7718lQhB8v0Y';
-  const range = 'Hoja 1!A3:D'; // ['Name', 'e-mail', 'Number of classes', 'Date']
+  const range = 'Hoja 1!A3:E'; // ['Name', 'e-mail', 'Number of classes', 'Date', 'Comment']
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -67,24 +65,27 @@ async function readSheet() {
 
   const validClients = [];
 
+  // console.log('Headers:', headers);
   for (const row of dataRows) {
     const rowData = {};
     headers.forEach((header, idx) => {
       rowData[header] = row[idx];
     });
-  
+    // console.log('RowData:', rowData);
+
     const name = rowData['Name']?.trim();
     const email = rowData['E-mail']?.trim();
     const packStr = rowData['Number of classes']?.trim();
     const expDateStr = rowData['Date']?.trim();
+    const comment = rowData['Comment']?.trim();
 
-    console.log(`Name: ${name}, Email: ${email}, Pack: ${packStr}, ExpDate: ${expDateStr}`);
+    console.log(`Name: ${name}, Email: ${email}, Pack: ${packStr}, ExpDate: ${expDateStr}, comment: ${comment}`);
 
     if (!email || !packStr || !expDateStr) continue;
-  
+
     const pack = parseInt(packStr);
     const expDate = parseExpDate(expDateStr, today);
-  
+
     if (!email || Number.isNaN(pack) || !expDateStr) continue;
     if (expDate == "INVALID") {
       console.log(`Invalid expiration date for ${name} (${email})`);
@@ -93,9 +94,9 @@ async function readSheet() {
 
     const names = name.split(' & ');
     const emails = email.split(' & ');
-    
+
     const groupId = emails.sort().join('&');
-  
+
     for (let i = 0; i < emails.length; i++) {
       validClients.push({
         name: names[i]?.trim() || 'Unknown',
@@ -103,9 +104,10 @@ async function readSheet() {
         currentPack: pack,
         expirationDate: expDate,
         groupId,
+        comment: comment || '',
       });
     }
-  }  
+  }
 
   return validClients;
 }
