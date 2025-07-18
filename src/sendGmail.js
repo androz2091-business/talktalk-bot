@@ -1,13 +1,7 @@
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
-import { render } from '@react-email/render';
-import { createElement } from 'react';
-import MyEmail from './MyEmail.js';
 
-import { getAllRemainingClasses } from './calculateRemainingClasses.js';
-import readSheet from './readGoogleSheet.js';
 import { google } from 'googleapis';
-
 
 async function getAccessToken() {
     const oAuth2Client = new google.auth.OAuth2(
@@ -25,7 +19,7 @@ async function getAccessToken() {
 }
 
 async function getTransporter() {
-    const accessToken = await getAccessToken();
+  const accessToken = await getAccessToken();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

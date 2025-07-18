@@ -120,7 +120,6 @@ async function getCachedData() {
     return cache.data;
 }
 
-
 console.log(process.env.GMAIL_USER)
 
 app.set('view engine', 'ejs');
@@ -147,7 +146,6 @@ app.get('/refresh', async (req, res) => {
     }
 });
 
-
 app.get('/', requireDashboardAuth, async (req, res) => {
     try {
         const students = await getCachedData();
@@ -160,7 +158,6 @@ app.get('/', requireDashboardAuth, async (req, res) => {
         res.status(500).send('Error fetching student data');
     }
 });
-
 
 app.get('/student/:email', requireDashboardAuth, async (req, res) => {
     try {

@@ -1,15 +1,13 @@
 import 'dotenv/config';
-import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { createElement } from 'react';
 import MyEmail from './MyEmail.js';
+import readSheet from './readGoogleSheet.js';
 
 import { getAllRemainingClasses } from './calculateRemainingClasses.js';
-import readSheet from './readGoogleSheet.js';
 import { getTransporter, sendEmail } from './sendGmail.js';
 async function main() {
   const studentList = await readSheet();
-
   const classInfoList = await getAllRemainingClasses(studentList);
 
   if (classInfoList.length === 0) {
@@ -32,14 +30,14 @@ async function main() {
       })
     );
 
-    // console.log(`--- Email to: ${email} ---`);
+    console.log(`--- Email to: ${email} ---`);
     // console.log(emailHtml);
-    // console.log(firstName);
+    console.log(firstName);
     // console.log('Remaining: ', remaining);
     // console.log('Completed: ', count);
     // console.log('Expiration: ', expiration);
 
-    await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
+    // await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
   }
 }
 

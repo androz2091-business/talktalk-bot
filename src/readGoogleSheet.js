@@ -45,7 +45,7 @@ async function readSheet() {
   const sheets = google.sheets({ version: 'v4', auth: client });
 
   const spreadsheetId = '14T-7rbh8L3_AmFqWZKxt60Fp_oB8ZGj7718lQhB8v0Y';
-  const range = 'Hoja 1!A3:E'; // ['Name', 'e-mail', 'Number of classes', 'Date', 'Comment']
+  const range = 'Hoja 1!A3:E'; // ['Name', 'E-mail', 'Number of classes', 'Date', 'Comment']
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,

@@ -9,7 +9,7 @@ const MyEmail = require('./MyEmail.jsx').default;
 
 const html = ReactDOMServer.renderToStaticMarkup(
   React.createElement(MyEmail, {
-    userName: 'Sam',
+    userName: 'Jam',
     completedClasses: 8,
     remainingClasses: 2,
     expirationDate: '18/07/2025',
