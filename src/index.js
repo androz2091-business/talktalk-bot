@@ -30,14 +30,14 @@ async function main() {
       })
     );
 
-    console.log(`--- Email to: ${email} ---`);
+    // console.log(`--- Email to: ${email} ---`);
     // console.log(emailHtml);
-    console.log(firstName);
+    // console.log(firstName);
     // console.log('Remaining: ', remaining);
     // console.log('Completed: ', count);
     // console.log('Expiration: ', expiration);
 
-    // await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
+    await sendEmail(transporter, email, `Hi ${firstName}, here's your weekly class update`, emailHtml);
   }
 }
 
